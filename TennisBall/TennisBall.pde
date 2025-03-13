@@ -2,6 +2,7 @@ import processing.serial.*; // 1) Importar librería de Serial
 
 // Declaración de variables
 PImage fondo;
+
 int barraX;
 int barraAncho = 200;
 int barraAlto = 15;
@@ -83,15 +84,23 @@ void draw() {
       if (bolaX >= barraX && bolaX <= barraX + barraAncho) {
         bolaVelocidadY *= -1; // rebote
       } else {
-        // Se cayó
         muertes++;
+         // Enviamos señal al Arduino indicando que hay una "muerte"
+          if (arduinoConnected) {
+            arduinoPort.write('4');
+          }
         reiniciarJuego();
       }
     }
 
+
     // Game over si muertes > 2
     if (muertes > 2) {
       gameOver = true;
+       // Enviar señal de game over
+        if (arduinoConnected) {
+          arduinoPort.write('3');
+        }
     }
   } else {
     textSize(32);
